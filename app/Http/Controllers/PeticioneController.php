@@ -14,18 +14,24 @@ class PeticioneController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth')->except(['index', 'show']); //es un intermediario con alguno de los metodos, es exigir que se requiera la autenticacion en todos los metodos de esta peticion excepto en los metdos de index y show
     }
 
     public function index()
     {
-        $content = Peticione::all();
+        $content = Peticione::paginate(5);
         return view('peticiones.index', compact('content'));
     }
 
-    public function delete(Peticione $id)
+    public function delete(Request $request, $id)
     {
-        $this->delete($id);
+        try {
+            $peticion = Peticione::findOrFail($id);
+            $peticion->delete();
+        } catch (\Exception $exception) {
+            return back()->withError($exception->getMessage()->withInput);
+        }
+        return redirect()->back;
     }
 
     public function firmar($peticioneId)
@@ -55,6 +61,9 @@ class PeticioneController extends Controller
             $content = Peticione::all();
             return view('peticiones.index', compact('content'));
         }
+        /*catch(\Exception $exception) {
+            return back()->withErrors($exception->getMessage())->withInput();
+    }*/
     }
 
     public function show($id)
@@ -81,8 +90,23 @@ class PeticioneController extends Controller
         return view('peticiones.edit-add', compact('categorias'));
     }
 
-    public function update(Request $request)
+    public function edit(Request $request, $id) {
+        try {
+            $peticion = Peticione::findOrFail($id);
+        } catch (\Exception $exception) {
+            return back()->withError($exception->getMessage())->withInput();
+        }
+        return view('peticiones.edit-add', compact('peticion'));
+    }
+    public function update(Request $request, $id)
     {
+        try {
+            $peticion = Peticione::findOrFail($id);
+            $peticion->update($request->all());
+        } catch (\Exception $exception) {
+            return back()->withError($exception->getMessage())->withInput();
+        }
+        return redirect()->back();
     }
 
     public function store(Request $request)
