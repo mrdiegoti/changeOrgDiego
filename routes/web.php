@@ -35,6 +35,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware('admin')->controller(\App\Http\Controllers\Admin\AdminPeticionesController::class)->group(function () {
+    Route::get('admin', 'index')->name('admin.home');
+Route::get('admin/peticiones/index', 'index')->name('admin.peticiones.index');
+Route::get('admin/peticiones/{id}', 'show')->name('admin.peticiones.show');
+Route::get('admin/peticion/add', 'create')->name('admin.peticiones.create');
+Route::get('admin/peticiones/edit/{id}', 'edit')->name('admin.peticiones.edit-add');
+Route::post('admin/peticiones', 'store')->name('admin.peticiones.store');
+Route::delete('admin/peticiones/{id}', 'delete')->name('admin.peticiones.delete');
+Route::put('admin/peticiones/{id}', 'update')->name('admin.peticiones.update');
+Route::put('admin/peticiones/estado/{id}', 'cambiarEstado')->name('admin.peticiones.estado');
+});
 
 require __DIR__ . '/auth.php';
 
